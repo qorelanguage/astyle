@@ -427,13 +427,13 @@ void ASResource::buildNonAssignmentOperators(vector<const string*>* nonAssignmen
 	nonAssignmentOperators->emplace_back(&AS_AND);
 	nonAssignmentOperators->emplace_back(&AS_OR);
 	nonAssignmentOperators->emplace_back(&AS_LAMBDA);
-/* TODO
+
   if (fileType == QORE_TYPE)
   {
     nonAssignmentOperators->emplace_back(&AS_Q_REG_EXP_MATCH);
     nonAssignmentOperators->emplace_back(&AS_Q_REG_EXP_NO_MATCH);
   }
-*/
+
 	assert(nonAssignmentOperators->size() < elements);
 	sort(nonAssignmentOperators->begin(), nonAssignmentOperators->end(), sortOnLength);
 }

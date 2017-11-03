@@ -385,7 +385,6 @@ public:
 	bool getNamespaceIndent() const;
 	bool getPreprocDefineIndent() const;
 	bool getSwitchIndent() const;
-  void setQoreStyle();
 
 protected:
 	void deleteBeautifierVectors();
