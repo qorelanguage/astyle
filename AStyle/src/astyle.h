@@ -314,7 +314,8 @@ protected:  // inline functions
 	bool isCStyle() const { return (baseFileType == C_TYPE); }
 	bool isJavaStyle() const { return (baseFileType == JAVA_TYPE); }
 	bool isSharpStyle() const { return (baseFileType == SHARP_TYPE); }
-	bool isWhiteSpace(char ch) const { return (ch == ' ' || ch == '\t'); }
+  bool isQoreStyle() const { return (baseFileType == QORE_TYPE); }
+  bool isWhiteSpace(char ch) const { return (ch == ' ' || ch == '\t'); }
 
 protected:  // functions definitions are at the end of ASResource.cpp
 	const string* findHeader(const string& line, int i,

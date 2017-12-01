@@ -926,6 +926,7 @@ string ASBeautifier::beautify(const string& originalLine)
 	previousLineProbationTab = false;
 	lineOpeningBlocksNum = 0;
 	lineClosingBlocksNum = 0;
+
 	if (isImmediatelyPostObjCMethodDefinition)
 		clearObjCMethodDefinitionAlignment();
 	if (isImmediatelyPostObjCMethodCall)
@@ -990,7 +991,6 @@ string ASBeautifier::beautify(const string& originalLine)
       {
         // TODO skip actual line - includes, %new-style etc.
         // there is better way to do it!
-        cout << "line si comment: " << line << std::endl;
         line = originalLine;
         return line;
       }
@@ -2516,11 +2516,16 @@ void ASBeautifier::parseCurrentLine(const string& line)
 	bool previousLineProbation = (probationHeader != nullptr);
 	char ch = ' ';
 	int tabIncrementIn = 0;
+
+//  printf("<%s:%d> isInQuote:%d:%d\n", __FUNCTION__, __LINE__, isInQuote, isQoreStyle()); // TODO smazat!
+
 	if (isInQuote
 	        && !haveLineContinuationChar
 	        && !isInVerbatimQuote
-	        && !isInAsm)
+	        && !isInAsm
+          && !isQoreStyle())
 		isInQuote = false;				// missing closing quote
+
 	haveLineContinuationChar = false;
 
 	for (size_t i = 0; i < line.length(); i++)
