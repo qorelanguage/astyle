@@ -488,6 +488,7 @@ private:  // variables
 	string indentString;
 	string verbatimDelimiter;
 	bool isInQuote;
+	bool isInQuoteContinuation;
 	bool isInVerbatimQuote;
 	bool haveLineContinuationChar;
 	bool isInAsm;

@@ -1011,7 +1011,7 @@ string ASBeautifier::beautify(const string& originalLine)
 
 	// When indent is OFF the lines must still be processed by ASBeautifier.
 	// Otherwise the lines immediately following may not be indented correctly.
-	if ((lineIsLineCommentOnly || lineIsCommentOnly)
+	if (((lineIsLineCommentOnly || lineIsCommentOnly) || (isInQuote && isQoreStyle()) )
 	        && line.find("*INDENT-OFF*", 0) != string::npos)
 		isIndentModeOff = true;
 
@@ -1263,7 +1263,9 @@ string ASBeautifier::beautify(const string& originalLine)
 const string& ASBeautifier::getIndentedLineReturn(const string& newLine, const string& originalLine) const
 {
 	if (isIndentModeOff)
+  {
 		return originalLine;
+  }
 	return newLine;
 }
 
@@ -2517,13 +2519,11 @@ void ASBeautifier::parseCurrentLine(const string& line)
 	char ch = ' ';
 	int tabIncrementIn = 0;
 
-//  printf("<%s:%d> isInQuote:%d:%d\n", __FUNCTION__, __LINE__, isInQuote, isQoreStyle()); // TODO smazat!
-
 	if (isInQuote
 	        && !haveLineContinuationChar
 	        && !isInVerbatimQuote
 	        && !isInAsm
-          && !isQoreStyle())
+          )
 		isInQuote = false;				// missing closing quote
 
 	haveLineContinuationChar = false;
@@ -2577,6 +2577,7 @@ void ASBeautifier::parseCurrentLine(const string& line)
 			{
 				quoteChar = ch;
 				isInQuote = true;
+        //isInQuoteContinuation = true;
 				char prevCh = i > 0 ? line[i - 1] : ' ';
 				if (isCStyle() && prevCh == 'R')
 				{
@@ -2592,6 +2593,11 @@ void ASBeautifier::parseCurrentLine(const string& line)
 				// check for "C" following "extern"
 				else if (g_preprocessorCppExternCBrace == 2 && line.compare(i, 3, "\"C\"") == 0)
 					++g_preprocessorCppExternCBrace;
+
+        if (isQoreStyle())
+        {
+          isIndentModeOff = true;  //  quotes starts, we should not indent
+        }
 			}
 			else if (isInVerbatimQuote && ch == '"')
 			{
@@ -2617,8 +2623,12 @@ void ASBeautifier::parseCurrentLine(const string& line)
 					}
 				}
 			}
-			else if (quoteChar == ch)
+      else if (quoteChar == ch)
 			{
+        if (isQoreStyle())
+        {
+          isIndentModeOff = false;  //  out of quotes, we can indent
+        }
 				isInQuote = false;
 				isContinuation = true;
 				continue;

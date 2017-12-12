@@ -5976,6 +5976,10 @@ void ASFormatter::formatQuoteBody()
 	}
 	else if (quoteChar == currentChar)
 	{
+    if (isQoreStyle())
+    {
+      isFormattingModeOff = false;  //  quotes ends, start indent
+    }
 		isInQuote = false;
 	}
 
@@ -6021,7 +6025,14 @@ void ASFormatter::formatQuoteOpener()
 		}
 	}
 	else if (isSharpStyle() && previousChar == '@')
+  {
 		isInVerbatimQuote = true;
+  }
+  else if (isQoreStyle())
+  {
+    isFormattingModeOff = true;  //  quotes starts, we should not indent
+  }
+
 
 	// a quote following a brace is an array
 	if (previousCommandChar == '{'
