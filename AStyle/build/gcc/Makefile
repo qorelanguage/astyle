@@ -60,7 +60,7 @@ ifdef CFLAGS
     CFLAGSd   = -g $(CBASEFLAGS) $(CFLAGS)
 else
     CFLAGSr   = -DNDEBUG -O3 $(CBASEFLAGS)
-    CFLAGSd   = -g $(CBASEFLAGS)
+    CFLAGSd   = -g -ggdb $(CBASEFLAGS)
 endif
 CFLAGSs   = -DASTYLE_LIB -fPIC $(CFLAGSr)
 CFLAGSsd  = -DASTYLE_LIB -fPIC $(CFLAGSd)

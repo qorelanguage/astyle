@@ -540,7 +540,7 @@ void ASConsole::formatCinToCout()
 
 	while (formatter.hasMoreLines())
 	{
-		cout << formatter.nextLine();
+        cout << formatter.nextLine();
 		if (formatter.hasMoreLines())
 		{
 			setOutputEOL(lineEndFormat, streamIterator.getOutputEOL());
@@ -599,8 +599,8 @@ void ASConsole::formatFile(const string& fileName_)
 	while (formatter.hasMoreLines())
 	{
 		nextLine = formatter.nextLine();
-    cout << "debug line: " << nextLine << std::endl;
-		out << nextLine;
+        fprintf(stderr, "debug line: '%s'\n", nextLine.c_str());
+		//out << nextLine;
 		linesOut++;
 		if (formatter.hasMoreLines())
 		{

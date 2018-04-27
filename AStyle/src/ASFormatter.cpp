@@ -492,6 +492,62 @@ string ASFormatter::nextLine()
 			isCharImmediatelyPostCloseBlock = false;
 		}
 
+        if (isQoreStyle())
+        {
+            // if line starts with %# -> do nothing!
+            if (currentChar == '%' || currentChar == '#')
+            {
+                // % is first non white space on line, otherwise format normally
+                if ((currentChar == '%') && (currentLine.find_first_not_of(" \t", charNum) == (size_t)charNum)) {
+                    lineCommentNoIndent = true;
+                    lineCommentNoBeautify = true;
+                }
+                else if (currentChar == '%') {  //  just modulo 
+                    appendCurrentChar();
+                    continue;                    
+                }
+                
+                while (charNum + 1 < (int) currentLine.length())
+                {
+                    currentChar = currentLine[++charNum];
+                    appendCurrentChar();
+                }
+                isLineReady = true;
+                formattedLine = currentLine;
+                isInLineBreak = false;
+                prependEmptyLine = false;
+
+                breakLine(false);
+                continue;
+            }
+            else if (currentChar == '"' || isInExecSQL == true)
+            {
+                isInQuote = true;
+                isInQuoteContinuation = true;
+                appendCurrentChar();
+                while (charNum + 1 < (int) currentLine.length())
+                {
+                    if (currentChar == '"') { //  ending quote
+                        isInQuote = false;
+                        isInQuoteContinuation = false;
+                        isInExecSQL = false;
+                        break;
+                    }
+                    currentChar = currentLine[++charNum];
+                    appendCurrentChar();
+                }
+                if (isInQuoteContinuation == true)  {  // reached end of line and still in quotes - isInQuoteContinuation is set to false by getNextChar / getNextLine
+                    isInExecSQL = true;
+                    formattedLine = currentLine;
+                    isLineReady = true;
+                    isInLineBreak = false;
+                    prependEmptyLine = false;
+                    breakLine();
+                }
+                continue;
+            }
+        }
+
 		if ((lineIsLineCommentOnly || lineIsCommentOnly)
 		        && currentLine.find("*INDENT-ON*", charNum) != string::npos
 		        && isFormattingModeOff)
@@ -554,7 +610,6 @@ string ASFormatter::nextLine()
 		}
 
 		// not in quote or comment or line comment
-
 		if (isSequenceReached("//"))
 		{
 			formatLineCommentOpener();
@@ -1135,7 +1190,7 @@ string ASFormatter::nextLine()
 		}
 
 		// look for headers
-		bool isPotentialHeader = isCharPotentialHeader(currentLine, charNum);
+		bool isPotentialHeader = (/*!isQoreStyle() && */isCharPotentialHeader(currentLine, charNum));
 
 		if (isPotentialHeader && !isInTemplate && squareBracketCount == 0)
 		{
@@ -1773,6 +1828,8 @@ string ASFormatter::nextLine()
 	string beautifiedLine;
 	size_t readyFormattedLineLength = trim(readyFormattedLine).length();
 	bool isInNamespace = isBraceType(braceTypeStack->back(), NAMESPACE_TYPE);
+    
+    fprintf(stderr,"<%s> readyFormattedLine: '%s'\n", __FUNCTION__, readyFormattedLine.c_str());
 
 	if (prependEmptyLine		// prepend a blank line before this formatted line
 	        && readyFormattedLineLength > 0
@@ -1812,6 +1869,7 @@ string ASFormatter::nextLine()
 
 	prependEmptyLine = false;
 	assert(computeChecksumOut(beautifiedLine));
+    fprintf(stderr,"<%s> beautifiedLine: '%s'\n", __FUNCTION__, beautifiedLine.c_str());
 	return beautifiedLine;
 }
 

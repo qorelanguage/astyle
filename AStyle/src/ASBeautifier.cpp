@@ -987,13 +987,6 @@ string ASBeautifier::beautify(const string& originalLine)
 				if (line.find("*/", 2) != string::npos)
 					lineIsCommentOnly = true;
 			}
-      else if (line[0] == '%')
-      {
-        // TODO skip actual line - includes, %new-style etc.
-        // there is better way to do it!
-        line = originalLine;
-        return line;
-      }
 		}
 
 		isInRunInComment = false;
@@ -2523,8 +2516,11 @@ void ASBeautifier::parseCurrentLine(const string& line)
 	        && !haveLineContinuationChar
 	        && !isInVerbatimQuote
 	        && !isInAsm
+          && !isQoreStyle()
           )
 		isInQuote = false;				// missing closing quote
+
+//  printf("<%s> wil format '%s'\n", __FUNCTION__, line.c_str());
 
 	haveLineContinuationChar = false;
 
